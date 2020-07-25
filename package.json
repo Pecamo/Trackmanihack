@@ -1,0 +1,26 @@
+{
+  "name": "Trackmanihack",
+  "version": "1.0.0",
+  "description": "Read and write Trackmania GBX files for maps and blocks",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "watch": "npx tsc -w",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pecamo/Trackmanihack.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pecamo/Trackmanihack/issues"
+  },
+  "homepage": "https://github.com/Pecamo/Trackmanihack#readme",
+  "devDependencies": {
+    "typescript": "^3.9.7"
+  }
+}
