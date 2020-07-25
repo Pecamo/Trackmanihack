@@ -1,9 +1,8 @@
 import * as TMH from './index';
+import * as path from 'path';
 
 
-const map = TMH.loadMap(process.argv[2] ?? '../resources/research/maps/One.Map.Gbx');
+const map = TMH.loadMap(process.argv[2] ?? path.resolve('resources/research/maps/One.Map.Gbx'));
 const header = map.readHeader();
-console.log("Tests :");
-console.log(header.version === 6);
-console.log(header.byteFormat === 'B' || header.byteFormat === 'T');
-console.log(header.classID);
+console.log("Read :");
+console.log(header);
