@@ -1,4 +1,4 @@
-import * as TMH from '../src/index';
+import * as TMH from './index';
 
 
 const map = TMH.loadMap(process.argv[2] ?? '../resources/research/maps/One.Map.Gbx');

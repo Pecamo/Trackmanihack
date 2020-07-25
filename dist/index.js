@@ -10,6 +10,6 @@ class TMHMap {
     }
 }
 exports.loadMap = (path) => {
-    return {};
+    return new TMHMap();
 };
 //# sourceMappingURL=index.js.map

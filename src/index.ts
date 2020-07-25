@@ -13,5 +13,5 @@ class TMHMap {
 }
 
 export const loadMap = (path: string) => {
-  return {} as TMHMap
+  return new TMHMap();
 }
