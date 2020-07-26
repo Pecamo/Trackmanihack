@@ -49,6 +49,9 @@ function readLookBackString(buffer, offset = 0, firstLookBack = true) {
                 str = stringList[index - 1];
             }
         }
+        else {
+            throw new Error('Lookbackstring with bit30 or bit31 !== 0. Not implemented yet.');
+        }
     }
     else {
         const res = readString_1.readString(buffer, offset);
