@@ -4,29 +4,29 @@ export class GBXParser {
     constructor (public buffer: GBXBuffer) {}
 
     public TMString(): string {
-        const length = this.buffer.readUInt32LE("strLength")
-        return this.buffer.readString("str", length);
+        const length = this.buffer.readUInt32LE()
+        return this.buffer.readString(length);
     }
 
     public TMLookbackString(firstLookBack: boolean = true): string {
         if (firstLookBack) {
-            const version = this.buffer.readUInt32LE("version");  // This seems to be 1. Maybe not always.
-            const indexAndBits = this.buffer.readUInt32LE("indexAndBits");
+            const version = this.buffer.readUInt32LE();  // This seems to be 1. Maybe not always.
+            const indexAndBits = this.buffer.readUInt32LE();
 
             if (version > 100000) {
                 throw new Error('LookBackString: value of version is way too big');
             }
 
             // The actual index is represented by the bits 0-29
-            const index = this.buffer.memory["indexAndBits"] >> 2;
+            const index = indexAndBits >> 2;
 
             if (index > 100000) {
                 throw new Error('LookBackString: value of index is way too big');
             }
 
             // bit 31 and 30 define the string type
-            const bit30: number = this.buffer.memory["indexAndBits"] & 0x1;
-            const bit31: number = this.buffer.memory["indexAndBits"] & 0x2 >> 1;
+            const bit30: number = indexAndBits & 0x1;
+            const bit31: number = indexAndBits & 0x2 >> 1;
 
             // console.log(bit30, bit31);
 
