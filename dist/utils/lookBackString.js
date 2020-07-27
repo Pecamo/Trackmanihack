@@ -13,10 +13,29 @@
     Note: Virtual Skipper 2 uses version 2 of the lookback strings. In this version, the string is always stored, the index always contains the position within the global name table, and the field with the version is also always present.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readLookBackString = void 0;
+exports.readLookBackStringBuffer = exports.nextLookbackStringParser = exports.firstLookbackStringParser = void 0;
+const binary_parser_1 = require("binary-parser");
 const readString_1 = require("./readString");
 const stringList = [];
-function readLookBackString(buffer, offset = 0, firstLookBack = true) {
+exports.firstLookbackStringParser = new binary_parser_1.Parser()
+    .endianess("little")
+    .uint32("version")
+    .bit30("index")
+    .bit2("bit30bit31")
+    .choice("str", {
+    tag: "bit30bit31",
+    choices: {
+        0: new binary_parser_1.Parser()
+            .endianess("little")
+            .uint32("strLength")
+            .string("str", { length: "strLength" })
+    }
+});
+exports.nextLookbackStringParser = new binary_parser_1.Parser()
+    .endianess("little")
+    .uint32("strLength")
+    .string("str", { length: "strLength" });
+function readLookBackStringBuffer(buffer, offset = 0, firstLookBack = true) {
     let str;
     if (firstLookBack) {
         const version = buffer.readUInt32LE(offset); // This seems to be 1. Maybe not always.
@@ -61,5 +80,5 @@ function readLookBackString(buffer, offset = 0, firstLookBack = true) {
     }
     return { str, offset };
 }
-exports.readLookBackString = readLookBackString;
+exports.readLookBackStringBuffer = readLookBackStringBuffer;
 //# sourceMappingURL=lookBackString.js.map

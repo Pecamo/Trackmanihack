@@ -12,13 +12,35 @@
     Note: Virtual Skipper 2 uses version 2 of the lookback strings. In this version, the string is always stored, the index always contains the position within the global name table, and the field with the version is also always present. 
 */
 
+import { Parser } from "binary-parser";
 import { readString } from "./readString";
 
 const stringList = [];
 
 export type LookBackString = string;
 
-export function readLookBackString(buffer: Buffer, offset: number = 0, firstLookBack: boolean = true) {
+export const firstLookbackStringParser = new Parser()
+    .endianess("little")
+    .uint32("version")
+    .bit30("index")
+    .bit2("bit30bit31")
+    .choice("str", {
+        tag: "bit30bit31",
+        choices: {
+            0: new Parser()
+            .endianess("little")
+            .uint32("strLength")
+            .string("str", { length: "strLength" })
+        }
+    })
+
+export const nextLookbackStringParser = new Parser()
+    .endianess("little")
+    .uint32("strLength")
+    .string("str", { length: "strLength" })
+
+
+export function readLookBackStringBuffer(buffer: Buffer, offset: number = 0, firstLookBack: boolean = true) {
     let str: string;
 
     if (firstLookBack) {
