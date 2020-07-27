@@ -13,26 +13,11 @@
 */
 
 import { Parser } from "binary-parser";
-import { readString } from "./readString";
+import { readStringBuffer, readString } from "./readString";
 
 const stringList = [];
 
 export type LookBackString = string;
-
-export const firstLookbackStringParser = new Parser()
-    .endianess("little")
-    .uint32("version")
-    .bit30("index")
-    .bit2("bit30bit31")
-    .choice("str", {
-        tag: "bit30bit31",
-        choices: {
-            0: new Parser()
-            .endianess("little")
-            .uint32("strLength")
-            .string("str", { length: "strLength" })
-        }
-    })
 
 export const nextLookbackStringParser = new Parser()
     .endianess("little")
@@ -71,7 +56,7 @@ export function readLookBackStringBuffer(buffer: Buffer, offset: number = 0, fir
 
             // If this value is 0, a new string follows
             if (index === 0) {
-                const res = readString(buffer, offset);
+                const res = readStringBuffer(buffer, offset);
                 str = res.str;
                 offset = res.newOffset;
 
@@ -83,7 +68,7 @@ export function readLookBackStringBuffer(buffer: Buffer, offset: number = 0, fir
             throw new Error('Lookbackstring with bit30 or bit31 !== 0. Not implemented yet.')
         }
     } else {
-        const res = readString(buffer, offset);
+        const res = readStringBuffer(buffer, offset);
         str = res.str;
         offset = res.newOffset;
 

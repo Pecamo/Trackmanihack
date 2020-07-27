@@ -1,4 +1,11 @@
-export function readString(buffer: Buffer, offset: number = 0) {
+import { Parser } from "binary-parser";
+
+export const readString = new Parser()
+    .endianess("little")
+    .uint32("strLength")
+    .string("str", { length: "strLength" })
+
+export function readStringBuffer(buffer: Buffer, offset: number = 0) {
     let strLength = buffer.readUInt32LE(offset);
     offset += 4;
 
