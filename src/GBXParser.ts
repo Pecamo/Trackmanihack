@@ -1,11 +1,15 @@
 import { GBXBuffer } from "./GBXBuffer";
 
 export class GBXParser {
-    constructor (public buffer: GBXBuffer) {}
+    constructor (public buffer: GBXBuffer, public stringList: string[] = []) {}
 
     public TMString(): string {
         const length = this.buffer.readUInt32LE()
         return this.buffer.readString(length);
+    }
+
+    public TMBool(): boolean {
+        return this.buffer.readUInt32LE() === 1;
     }
 
     public TMLookbackString(firstLookBack: boolean = true): string {
@@ -28,19 +32,26 @@ export class GBXParser {
             const bit30: number = indexAndBits & 0x1;
             const bit31: number = indexAndBits & 0x2 >> 1;
 
-            // console.log(bit30, bit31);
-
             // index is a number
             if (bit30 === 0 && bit31 === 0) {
                 // If this value is 0, a new string follows
                 if (index === 0) {
                     return this.TMString();
                 } else {
-                    // str = stringList[index - 1];
-                    throw new Error('Lookbackstring with index !== 0. Not implemented yet.')
+                    return this.stringList[index - 1];
                 }
             } else {
-                throw new Error('Lookbackstring with bit30 or bit31 !== 0. Not implemented yet.')
+                if (bit30 === 0 && bit31 === 1) {
+                    return "Unassigned";
+                }
+                else if (bit30 === 1 && bit31 === 0) {
+                    return "-1";
+                }
+                else if (bit30 === 1 && bit31 === 1) {
+                    const str = this.TMString();
+                    this.stringList.push(str);
+                    return str;
+                }
             }
         } else {
             return this.TMString();
