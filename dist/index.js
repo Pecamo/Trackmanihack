@@ -28,7 +28,7 @@ class TMHMap {
         })
             .uint32("classID", {
             formatter: function (data) {
-                return data.toString(16);
+                return data.toString( /*16*/);
             }
         })
             .uint32("userDataSize")

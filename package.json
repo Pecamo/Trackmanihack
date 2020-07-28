@@ -26,6 +26,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "binary-parser": "^1.6.2"
+    "binary-parser": "^1.6.2",
+    "lzo": "^0.4.11"
   }
 }

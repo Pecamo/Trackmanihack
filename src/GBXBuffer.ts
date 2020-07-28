@@ -1,3 +1,5 @@
+import * as lzo from "lzo";
+
 export class GBXBuffer {
     public currentOffset: number = 0;
 
@@ -23,5 +25,18 @@ export class GBXBuffer {
 
     public skip(numberOfBytes: number): void {
         this.currentOffset += numberOfBytes;
+    }
+
+    public decompress(compressedSize: number, decompressedSize?: number): GBXBuffer {
+        const lzoCompressedData = this.buffer.slice(this.currentOffset, this.currentOffset + compressedSize);
+        const decompressedBuffer = lzo.decompress(lzoCompressedData, decompressedSize);
+        this.currentOffset += compressedSize;
+        const gbxBuffer = new GBXBuffer(decompressedBuffer);
+        // TODO Check for errors
+        return gbxBuffer;
+    }
+
+    public getLength(): number {
+        return this.buffer.length;
     }
 }

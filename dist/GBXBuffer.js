@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GBXBuffer = void 0;
+const lzo = require("lzo");
 class GBXBuffer {
     constructor(buffer) {
         this.buffer = buffer;
@@ -23,6 +24,17 @@ class GBXBuffer {
     }
     skip(numberOfBytes) {
         this.currentOffset += numberOfBytes;
+    }
+    decompress(compressedSize, decompressedSize) {
+        const lzoCompressedData = this.buffer.slice(this.currentOffset, this.currentOffset + compressedSize);
+        const decompressedBuffer = lzo.decompress(lzoCompressedData, decompressedSize);
+        this.currentOffset += compressedSize;
+        const gbxBuffer = new GBXBuffer(decompressedBuffer);
+        // TODO Check for errors
+        return gbxBuffer;
+    }
+    getLength() {
+        return this.buffer.length;
     }
 }
 exports.GBXBuffer = GBXBuffer;
