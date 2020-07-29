@@ -1,4 +1,5 @@
 import * as lzo from "lzo";
+import * as fs from "fs";
 
 export class GBXBuffer {
     public currentOffset: number = 0;
@@ -31,12 +32,25 @@ export class GBXBuffer {
         const lzoCompressedData = this.buffer.slice(this.currentOffset, this.currentOffset + compressedSize);
         const decompressedBuffer = lzo.decompress(lzoCompressedData, decompressedSize);
         this.currentOffset += compressedSize;
+        fs.writeFileSync('./output.gbx', decompressedBuffer);
         const gbxBuffer = new GBXBuffer(decompressedBuffer);
         // TODO Check for errors
         return gbxBuffer;
     }
 
-    public getLength(): number {
+    public get length(): number {
         return this.buffer.length;
+    }
+
+    public seekFacade(): number {
+        for (let i = 0; i < this.buffer.length - 4; i++) {
+            if (this.buffer.readUInt32LE(i) === 0xFACADE01) {
+                return i;
+            }
+        }
+    }
+
+    public skipToFacade(): void {
+        this.skip(this.seekFacade());
     }
 }

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GBXBuffer = void 0;
 const lzo = require("lzo");
+const fs = require("fs");
 class GBXBuffer {
     constructor(buffer) {
         this.buffer = buffer;
@@ -29,12 +30,23 @@ class GBXBuffer {
         const lzoCompressedData = this.buffer.slice(this.currentOffset, this.currentOffset + compressedSize);
         const decompressedBuffer = lzo.decompress(lzoCompressedData, decompressedSize);
         this.currentOffset += compressedSize;
+        fs.writeFileSync('./output.gbx', decompressedBuffer);
         const gbxBuffer = new GBXBuffer(decompressedBuffer);
         // TODO Check for errors
         return gbxBuffer;
     }
-    getLength() {
+    get length() {
         return this.buffer.length;
+    }
+    seekFacade() {
+        for (let i = 0; i < this.buffer.length - 4; i++) {
+            if (this.buffer.readUInt32LE(i) === 0xFACADE01) {
+                return i;
+            }
+        }
+    }
+    skipToFacade() {
+        this.skip(this.seekFacade());
     }
 }
 exports.GBXBuffer = GBXBuffer;
