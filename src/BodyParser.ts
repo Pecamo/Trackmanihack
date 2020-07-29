@@ -36,16 +36,15 @@ export class BodyParser extends GBXParser {
             }
 
             // chunkFlags = GetChunkInfo(chunkID);
-
-            // const isSkippable = this.buffer.readString(4) === 'SKIP';
-            //
-            // if (isSkippable) {
-            //     const skipSize = this.buffer.readUInt32LE();
-            //     this.buffer.skip(skipSize);
-            // } else {
-            //     // Rewind SKIP check
-            //     this.buffer.currentOffset -= 4;
-            // }
+            const isSkippable = this.buffer.readString(4) === 'PIKS';
+            if (isSkippable) {
+                const skipSize = this.buffer.readUInt32LE();
+                console.log(`SKIP ${skipSize} bytes`);
+                this.buffer.skip(skipSize);
+            } else {
+                // Rewind SKIP check
+                this.buffer.currentOffset -= 4;
+            }
 
             switch (chunkID) {
                 case 0x304300d:

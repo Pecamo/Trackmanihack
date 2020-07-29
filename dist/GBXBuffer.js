@@ -19,7 +19,7 @@ class GBXBuffer {
         return value;
     }
     readString(length) {
-        const value = this.buffer.toString('utf8', this.currentOffset, this.currentOffset + length);
+        const value = this.buffer.toString("utf8", this.currentOffset, this.currentOffset + length);
         this.currentOffset += length;
         return value;
     }
@@ -30,7 +30,7 @@ class GBXBuffer {
         const lzoCompressedData = this.buffer.slice(this.currentOffset, this.currentOffset + compressedSize);
         const decompressedBuffer = lzo.decompress(lzoCompressedData, decompressedSize);
         this.currentOffset += compressedSize;
-        fs.writeFileSync('./output.gbx', decompressedBuffer);
+        fs.writeFileSync("./output.gbx", decompressedBuffer);
         const gbxBuffer = new GBXBuffer(decompressedBuffer);
         // TODO Check for errors
         return gbxBuffer;
@@ -40,7 +40,8 @@ class GBXBuffer {
     }
     seekFacade() {
         for (let i = 0; i < this.buffer.length - 4; i++) {
-            if (this.buffer.readUInt32LE(i) === 0xFACADE01) {
+            if (this.buffer.slice(this.currentOffset).readUInt32LE(i) ===
+                0xfacade01) {
                 return i;
             }
         }
