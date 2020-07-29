@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npx tsc",
     "watch": "npx tsc -w",
+    "prettier": "npx prettier --write src",
     "start": "node dist/index.js",
     "test": "node dist/test.js"
   },
