@@ -19,7 +19,11 @@ export class GBXBuffer {
     }
 
     public readString(length: number): string {
-        const value = this.buffer.toString('utf8', this.currentOffset, this.currentOffset + length);
+        const value = this.buffer.toString(
+            "utf8",
+            this.currentOffset,
+            this.currentOffset + length
+        );
         this.currentOffset += length;
         return value;
     }
@@ -28,11 +32,20 @@ export class GBXBuffer {
         this.currentOffset += numberOfBytes;
     }
 
-    public decompress(compressedSize: number, decompressedSize?: number): GBXBuffer {
-        const lzoCompressedData = this.buffer.slice(this.currentOffset, this.currentOffset + compressedSize);
-        const decompressedBuffer = lzo.decompress(lzoCompressedData, decompressedSize);
+    public decompress(
+        compressedSize: number,
+        decompressedSize?: number
+    ): GBXBuffer {
+        const lzoCompressedData = this.buffer.slice(
+            this.currentOffset,
+            this.currentOffset + compressedSize
+        );
+        const decompressedBuffer = lzo.decompress(
+            lzoCompressedData,
+            decompressedSize
+        );
         this.currentOffset += compressedSize;
-        fs.writeFileSync('./output.gbx', decompressedBuffer);
+        fs.writeFileSync("./output.gbx", decompressedBuffer);
         const gbxBuffer = new GBXBuffer(decompressedBuffer);
         // TODO Check for errors
         return gbxBuffer;
@@ -44,7 +57,10 @@ export class GBXBuffer {
 
     public seekFacade(): number {
         for (let i = 0; i < this.buffer.length - 4; i++) {
-            if (this.buffer.readUInt32LE(i) === 0xFACADE01) {
+            if (
+                this.buffer.slice(this.currentOffset).readUInt32LE(i) ===
+                0xfacade01
+            ) {
                 return i;
             }
         }

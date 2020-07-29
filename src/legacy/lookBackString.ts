@@ -22,17 +22,20 @@ export type LookBackString = string;
 export const nextLookbackStringParser = new Parser()
     .endianess("little")
     .uint32("strLength")
-    .string("str", { length: "strLength" })
+    .string("str", { length: "strLength" });
 
-
-export function readLookBackStringBuffer(buffer: Buffer, offset: number = 0, firstLookBack: boolean = true) {
+export function readLookBackStringBuffer(
+    buffer: Buffer,
+    offset: number = 0,
+    firstLookBack: boolean = true
+) {
     let str: string;
 
     if (firstLookBack) {
         const version = buffer.readUInt32LE(offset); // This seems to be 1. Maybe not always.
         offset += 4;
         if (version > 100000) {
-            throw new Error('LookBackString: value of version is way too big');
+            throw new Error("LookBackString: value of version is way too big");
         }
 
         let index = buffer.readUInt32LE(offset);
@@ -40,13 +43,13 @@ export function readLookBackStringBuffer(buffer: Buffer, offset: number = 0, fir
         // console.log("index", index);
 
         if (index > 100000) {
-            throw new Error('LookBackString: value of index is way too big');
+            throw new Error("LookBackString: value of index is way too big");
         }
 
         // bit 31 and 30 define the string type
         const bit30: number = index & 0x1;
-        const bit31: number = index & 0x2 >> 1;
-        
+        const bit31: number = index & (0x2 >> 1);
+
         // console.log(bit30, bit31);
 
         // index is a number
@@ -65,7 +68,9 @@ export function readLookBackStringBuffer(buffer: Buffer, offset: number = 0, fir
                 str = stringList[index - 1];
             }
         } else {
-            throw new Error('Lookbackstring with bit30 or bit31 !== 0. Not implemented yet.')
+            throw new Error(
+                "Lookbackstring with bit30 or bit31 !== 0. Not implemented yet."
+            );
         }
     } else {
         const res = readStringBuffer(buffer, offset);
