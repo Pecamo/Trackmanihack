@@ -8,6 +8,14 @@ class GBXBuffer {
         this.buffer = buffer;
         this.currentOffset = 0;
     }
+    readByte() {
+        return this.readUInt8();
+    }
+    readUInt8() {
+        const value = this.buffer.readUInt8(this.currentOffset);
+        this.currentOffset++;
+        return value;
+    }
     readUInt32LE() {
         const value = this.buffer.readUInt32LE(this.currentOffset);
         this.currentOffset += 4;

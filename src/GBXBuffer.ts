@@ -6,6 +6,16 @@ export class GBXBuffer {
 
     constructor(protected buffer: Buffer) {}
 
+    public readByte(): number {
+        return this.readUInt8();
+    }
+
+    public readUInt8(): number {
+        const value = this.buffer.readUInt8(this.currentOffset);
+        this.currentOffset++;
+        return value;
+    }
+
     public readUInt32LE(): number {
         const value = this.buffer.readUInt32LE(this.currentOffset);
         this.currentOffset += 4;

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BodyParser = void 0;
 const GBXParser_1 = require("./GBXParser");
 const TrackParser_1 = require("./chunks/TrackParser");
+const GlobalState_1 = require("./GlobalState");
 class BodyParser extends GBXParser_1.GBXParser {
     constructor(buffer, stringList = []) {
         super(buffer, stringList);
@@ -22,9 +23,8 @@ class BodyParser extends GBXParser_1.GBXParser {
     TMNode() {
         while (true) {
             const chunkID = this.buffer.readUInt32LE();
-            console.log(chunkID.toString(16), this.buffer.currentOffset);
-            if (chunkID >= 0x03043000 && chunkID <= 0x030a30ff) {
-                console.log(chunkID.toString(16), this.buffer.currentOffset);
+            if (chunkID >= 0x0301a000 && chunkID <= 0x0313b000) {
+                console.log("Chunk ID:", chunkID.toString(16), this.buffer.currentOffset);
             }
             if (chunkID === 0xfacade01) {
                 // TODO OnNodLoaded();
@@ -45,21 +45,22 @@ class BodyParser extends GBXParser_1.GBXParser {
             switch (chunkID) {
                 // CLASS CGameCtnChallenge
                 case 0x03043000:
-                    return;
+                    break;
                 case 0x03043002: // TmDesc
-                    return;
+                    break;
                 case 0x03043003: // Common
-                    return;
+                    break;
                 case 0x03043004: // Version
-                    return;
+                    break;
                 case 0x03043005: // Community
-                    return;
+                    break;
                 case 0x03043007: // Thumbnail
-                    return;
+                    break;
                 case 0x03043008: // Author
-                    return;
+                    break;
                 case 0x0304300d:
                     // console.log(this.TMMeta(3));
+                    GlobalState_1.GlobalState.getInstance().state.isFirstLookback = false;
                     // TODO Implement
                     this.buffer.skip(4 * 4);
                     break;
@@ -73,23 +74,24 @@ class BodyParser extends GBXParser_1.GBXParser {
                     console.log("kind", kind);
                     break;
                 case 0x03043012:
-                    return;
+                    break;
                 case 0x03043013:
-                    return;
+                    break;
                 case 0x03043014: // skippable
-                    return;
+                    break;
                 case 0x03043017: // skippable
-                    return;
+                    break;
                 case 0x03043018: // skippable
-                    return;
+                    break;
                 case 0x03043019: // skippable
-                    return;
+                    break;
                 case 0x0304301c: // skippable
-                    return;
+                    break;
                 case 0x0304301f:
                     console.log((0x0304301f).toString(16));
                     const trackParser = new TrackParser_1.TrackParser(this.buffer);
-                    console.log(trackParser.TMTrack());
+                    console.log(trackParser.TMTrack(chunkID));
+                    return;
                     break;
                 case 0x03043021:
                     this.TMNodeReference(); // clipIntro
@@ -97,155 +99,155 @@ class BodyParser extends GBXParser_1.GBXParser {
                     this.TMNodeReference(); // clipGroupEndRace
                     break;
                 case 0x03043022:
-                    return;
+                    break;
                 case 0x03043024:
-                    return;
+                    break;
                 case 0x03043025:
-                    return;
+                    break;
                 case 0x03043026:
                     this.TMNodeReference(); // clipGlobal
-                    return;
+                    break;
                 case 0x03043027:
-                    return;
+                    break;
                 case 0x03043028:
-                    return;
+                    break;
                 case 0x03043029: // skippable
-                    return;
+                    break;
                 case 0x0304302a:
-                    return;
+                    break;
                 case 0x0304303d: // skippable
-                    return;
+                    break;
                 case 0x03043044: // skippable
-                    return;
+                    break;
                 case 0x03043054: // skippable
-                    return;
+                    break;
                 // CLASS CGameCtnCollectorList
                 case 0x0301b000:
                     this.CGameCtnCollectorList();
                     break;
                 // CLASS CGameCtnChallengeParameters
                 case 0x0305b000: // All fields are ignored
-                    return;
+                    break;
                 case 0x0305b001:
                     this.CGameCtnChallengeParameters();
                     break;
                 case 0x0305b002: // All fields are ignored
-                    return;
+                    break;
                 case 0x0305b003: // All fields are ignored
-                    return;
+                    break;
                 case 0x0305b004:
-                    return;
+                    break;
                 case 0x0305b005:
-                    return;
+                    break;
                 case 0x0305b006:
-                    return;
+                    break;
                 case 0x0305b007:
-                    return;
+                    break;
                 case 0x0305b008:
-                    return;
+                    break;
                 case 0x0305b00a:
-                    return;
+                    break;
                 case 0x0305b00d:
-                    return;
+                    break;
                 case 0x0305b00e: // skippable
-                    return;
+                    break;
                 // CLASS CGameCtnBlockSkin
                 case 0x03059000:
-                    return;
+                    break;
                 case 0x03059001:
-                    return;
+                    break;
                 case 0x03059002:
-                    return;
+                    break;
                 // CLASS CGameWaypointSpecialProperty
                 case 0x0313b000:
-                    return;
+                    break;
                 // CLASS CGameCtnReplayRecord
                 case 0x03093000: // Version
-                    return;
+                    break;
                 case 0x03093001: // Community
-                    return;
+                    break;
                 case 0x03093002: // Author (header) (body)
-                    return;
+                    break;
                 case 0x03093007: // skippable
-                    return;
+                    break;
                 case 0x03093014:
-                    return;
+                    break;
                 case 0x03093015:
-                    return;
+                    break;
                 // CLASS CGameGhost
                 case 0x0303f005:
-                    return;
+                    break;
                 case 0x0303f006:
-                    return;
+                    break;
                 // CLASS CGameCtnGhost
                 case 0x03092000: // skippable
-                    return;
+                    break;
                 case 0x03092005: // skippable
-                    return;
+                    break;
                 case 0x03092008: // skippable
-                    return;
+                    break;
                 case 0x03092009: // skippable
-                    return;
+                    break;
                 case 0x0309200a: // skippable
-                    return;
+                    break;
                 case 0x0309200b: // skippable
-                    return;
+                    break;
                 case 0x0309200c:
-                    return;
+                    break;
                 case 0x0309200e:
-                    return;
+                    break;
                 case 0x0309200f:
-                    return;
+                    break;
                 case 0x03092010:
-                    return;
+                    break;
                 case 0x03092012:
-                    return;
+                    break;
                 case 0x03092013: // skippable
-                    return;
+                    break;
                 case 0x03092014: // skippable
-                    return;
+                    break;
                 case 0x03092015:
-                    return;
+                    break;
                 case 0x03092017: // skippable
-                    return;
+                    break;
                 case 0x03092018:
-                    return;
+                    break;
                 case 0x03092019:
-                    return;
+                    break;
                 // CLASS CGameCtnCollector
                 case 0x0301a000:
-                    return;
+                    break;
                 case 0x0301a003: // Desc (header)
-                    return;
+                    break;
                 case 0x0301a004: // Icon (header)
-                    return;
+                    break;
                 case 0x0301a006: // (header)
-                    return;
+                    break;
                 case 0x0301a007:
-                    return;
+                    break;
                 case 0x0301a008:
-                    return;
+                    break;
                 case 0x0301a009:
-                    return;
+                    break;
                 case 0x0301a00b:
-                    return;
+                    break;
                 case 0x0301a00c:
-                    return;
+                    break;
                 case 0x0301a00d:
-                    return;
+                    break;
                 case 0x0301a00e:
-                    return;
+                    break;
                 case 0x0301a00f:
-                    return;
+                    break;
                 // CLASS CGameCtnObjectInfo
                 case 0x0301c000: // (header)
-                    return;
+                    break;
                 case 0x0301c001: // (header)
-                    return;
+                    break;
                 case 0x0301c006:
-                    return;
+                    break;
                 default:
-                    return;
+                // return;
                 // console.warn(`Unhandled Chuck: ${chunkID.toString(16)}`);
             }
         }
