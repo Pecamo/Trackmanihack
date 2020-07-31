@@ -4,11 +4,11 @@ exports.BodyParser = void 0;
 const GBXParser_1 = require("./GBXParser");
 const TrackParser_1 = require("./chunks/TrackParser");
 const GlobalState_1 = require("./GlobalState");
+const CommonParser_1 = require("./chunks/CommonParser");
 class BodyParser extends GBXParser_1.GBXParser {
-    constructor(buffer, stringList = []) {
-        super(buffer, stringList);
+    constructor(buffer) {
+        super(buffer);
         this.buffer = buffer;
-        this.stringList = stringList;
         this.isEof = false;
         this.nodeList = [];
     }
@@ -54,6 +54,7 @@ class BodyParser extends GBXParser_1.GBXParser {
                 case 0x03043002: // TmDesc
                     break;
                 case 0x03043003: // Common
+                    (new CommonParser_1.CommonParser(this.buffer)).TMCommon();
                     break;
                 case 0x03043004: // Version
                     break;
@@ -106,16 +107,16 @@ class BodyParser extends GBXParser_1.GBXParser {
                     this.buffer.readUInt32LE();
                     break;
                 case 0x03043024:
-                    const version = this.buffer.readByte();
-                    if (version >= 3) {
+                    const ver = this.buffer.readByte();
+                    if (ver >= 3) {
                         const checksum = this.buffer.readBytes(32);
                         console.log(checksum);
                     }
                     const filePath = this.TMString();
-                    if (filePath.length > 0 && version >= 1) {
+                    if (filePath.length > 0 && ver >= 1) {
                         const locatorUrl = this.TMString();
                     }
-                    console.log(version, filePath);
+                    console.log(ver, filePath);
                     break;
                 case 0x03043025:
                     const mapCoordOrigin = this.TMVec2();

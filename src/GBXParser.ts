@@ -19,7 +19,7 @@ export type Color = {
 };
 
 export class GBXParser {
-    constructor(public buffer: GBXBuffer, public stringList: string[] = []) {}
+    constructor(public buffer: GBXBuffer) {}
 
     public TMString(): string {
         const length = this.buffer.readUInt32LE();
@@ -90,8 +90,8 @@ export class GBXParser {
                 // console.log("New String:", str);
                 return str;
             } else {
-                console.log(`Stored String at index ${index}:`, this.stringList[index - 1]);
-                return this.stringList[index - 1];
+                console.log(`Stored String at index ${index}:`, GlobalState.getInstance().state.stringStorage[index - 1]);
+                return GlobalState.getInstance().state.stringStorage[index - 1];
             }
         } else {
             if (bit30 === 0 && bit31 === 1) {
@@ -100,7 +100,7 @@ export class GBXParser {
                 return "-1";
             } else if (bit30 === 1 && bit31 === 1 && index === 0) {
                 const str = this.TMString();
-                this.stringList.push(str);
+                GlobalState.getInstance().state.stringStorage.push(str);
                 return str;
             } else {
                 return "";

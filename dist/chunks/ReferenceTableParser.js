@@ -3,10 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReferenceTableParser = void 0;
 const GBXParser_1 = require("../GBXParser");
 class ReferenceTableParser extends GBXParser_1.GBXParser {
-    constructor(buffer, stringList = []) {
-        super(buffer, stringList);
+    constructor(buffer) {
+        super(buffer);
         this.buffer = buffer;
-        this.stringList = stringList;
     }
     TMReferenceTable() {
         const r = {};

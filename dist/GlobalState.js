@@ -3,8 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GlobalState = void 0;
 class GlobalState {
     constructor() {
+        this.stringStorage = [];
         this.state = {
             isFirstLookback: true,
+            version: undefined,
+            stringStorage: [],
         };
         // Clone state into InitState
         this.initState = Object.assign({}, this.state);

@@ -4,7 +4,7 @@ exports.HeaderParser = void 0;
 const GBXParser_1 = require("../GBXParser");
 class HeaderParser extends GBXParser_1.GBXParser {
     constructor(buffer, stringList = []) {
-        super(buffer, stringList);
+        super(buffer);
         this.buffer = buffer;
         this.stringList = stringList;
     }

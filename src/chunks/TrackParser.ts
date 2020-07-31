@@ -5,8 +5,8 @@ import { GBXBuffer } from "../GBXBuffer";
 import { BodyParser } from "../BodyParser";
 
 export class TrackParser extends GBXParser {
-    constructor(public buffer: GBXBuffer, public stringList: string[] = []) {
-        super(buffer, stringList);
+    constructor(public buffer: GBXBuffer) {
+        super(buffer);
     }
 
     public TMTrack(chunkId: number) {
@@ -40,15 +40,10 @@ export class TrackParser extends GBXParser {
         // FIXME I don't know if it's supposed to be < or <=.
         for (let i = 0; i <= result.numBlocks; i++) {
             const block: any = {};
-            // lookbackstring blockName
             block.blockName = this.TMLookbackString();
-            // byte rotation (0/1/2/3)
             block.rotation = this.buffer.readByte();
-            // byte x
             block.x = this.buffer.readByte();
-            // byte y
             block.y = this.buffer.readByte();
-            // byte z
             block.z = this.buffer.readByte();
             // if version == 0:
             //     uint16 flags
@@ -59,6 +54,7 @@ export class TrackParser extends GBXParser {
             console.log(block.flags.toString(16));
             if (block.flags === 0xFFFFFFFF) {
                 // continue (read the next block)
+                result.blocks.push(block);
                 continue;
             }
             // if (flags & 0x8000) != 0: custom block
@@ -67,12 +63,13 @@ export class TrackParser extends GBXParser {
                 // lookbackstring author
                 block.blockAuthor = this.TMLookbackString();
                 // noderef skin
+                ((new BodyParser(this.buffer)).TMNodeReference());
             }
             // if (flags & 0x100000)
             if ((block.flags & 0x100000) !== 0) {
-                console.log("truc bidule");
+                console.log("Block parameters");
                 // noderef blockparameters
-                // ((new BodyParser(this.buffer)).TMNodeReference());
+                ((new BodyParser(this.buffer)).TMNodeReference());
             }
 
             result.blocks.push(block);

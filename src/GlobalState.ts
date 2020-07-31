@@ -1,6 +1,8 @@
 export class GlobalState {
     private static instance: GlobalState;
     private initState: any;
+    private version: number;
+    private stringStorage: string[] = [];
 
     private constructor() {
         // Clone state into InitState
@@ -8,10 +10,11 @@ export class GlobalState {
             ...this.state
         };
     }
-    
 
     public state = {
         isFirstLookback: true,
+        version: undefined,
+        stringStorage: [],
     }
 
     public static getInstance(): GlobalState {

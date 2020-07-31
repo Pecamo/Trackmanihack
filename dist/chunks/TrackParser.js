@@ -3,11 +3,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TrackParser = void 0;
 const GBXParser_1 = require("../GBXParser");
+const BodyParser_1 = require("../BodyParser");
 class TrackParser extends GBXParser_1.GBXParser {
-    constructor(buffer, stringList = []) {
-        super(buffer, stringList);
+    constructor(buffer) {
+        super(buffer);
         this.buffer = buffer;
-        this.stringList = stringList;
     }
     TMTrack(chunkId) {
         const result = {};
@@ -37,15 +37,10 @@ class TrackParser extends GBXParser_1.GBXParser {
         // FIXME I don't know if it's supposed to be < or <=.
         for (let i = 0; i <= result.numBlocks; i++) {
             const block = {};
-            // lookbackstring blockName
             block.blockName = this.TMLookbackString();
-            // byte rotation (0/1/2/3)
             block.rotation = this.buffer.readByte();
-            // byte x
             block.x = this.buffer.readByte();
-            // byte y
             block.y = this.buffer.readByte();
-            // byte z
             block.z = this.buffer.readByte();
             // if version == 0:
             //     uint16 flags
@@ -56,6 +51,7 @@ class TrackParser extends GBXParser_1.GBXParser {
             console.log(block.flags.toString(16));
             if (block.flags === 0xFFFFFFFF) {
                 // continue (read the next block)
+                result.blocks.push(block);
                 continue;
             }
             // if (flags & 0x8000) != 0: custom block
@@ -64,12 +60,13 @@ class TrackParser extends GBXParser_1.GBXParser {
                 // lookbackstring author
                 block.blockAuthor = this.TMLookbackString();
                 // noderef skin
+                ((new BodyParser_1.BodyParser(this.buffer)).TMNodeReference());
             }
             // if (flags & 0x100000)
             if ((block.flags & 0x100000) !== 0) {
-                console.log("truc bidule");
+                console.log("Block parameters");
                 // noderef blockparameters
-                // ((new BodyParser(this.buffer)).TMNodeReference());
+                ((new BodyParser_1.BodyParser(this.buffer)).TMNodeReference());
             }
             result.blocks.push(block);
         }

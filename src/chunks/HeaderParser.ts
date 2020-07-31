@@ -3,7 +3,7 @@ import { GBXBuffer } from "../GBXBuffer";
 
 export class HeaderParser extends GBXParser {
     constructor(public buffer: GBXBuffer, public stringList: string[] = []) {
-        super(buffer, stringList);
+        super(buffer);
     }
 
     public TMHeader() {

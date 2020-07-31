@@ -2,8 +2,8 @@ import { GBXParser } from "../GBXParser";
 import { GBXBuffer } from "../GBXBuffer";
 
 export class ReferenceTableParser extends GBXParser {
-    constructor(public buffer: GBXBuffer, public stringList: string[] = []) {
-        super(buffer, stringList);
+    constructor(public buffer: GBXBuffer) {
+        super(buffer);
     }
 
     public TMReferenceTable() {

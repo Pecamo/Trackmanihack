@@ -3,9 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GBXParser = void 0;
 const GlobalState_1 = require("./GlobalState");
 class GBXParser {
-    constructor(buffer, stringList = []) {
+    constructor(buffer) {
         this.buffer = buffer;
-        this.stringList = stringList;
     }
     TMString() {
         const length = this.buffer.readUInt32LE();
@@ -61,8 +60,8 @@ class GBXParser {
                 return str;
             }
             else {
-                console.log(`Stored String at index ${index}:`, this.stringList[index - 1]);
-                return this.stringList[index - 1];
+                console.log(`Stored String at index ${index}:`, GlobalState_1.GlobalState.getInstance().state.stringStorage[index - 1]);
+                return GlobalState_1.GlobalState.getInstance().state.stringStorage[index - 1];
             }
         }
         else {
@@ -74,7 +73,7 @@ class GBXParser {
             }
             else if (bit30 === 1 && bit31 === 1 && index === 0) {
                 const str = this.TMString();
-                this.stringList.push(str);
+                GlobalState_1.GlobalState.getInstance().state.stringStorage.push(str);
                 return str;
             }
             else {
