@@ -11,6 +11,11 @@ class GBXBuffer {
     readByte() {
         return this.readUInt8();
     }
+    readBytes(numberOfBytes) {
+        const value = this.buffer.slice(this.currentOffset, this.currentOffset + numberOfBytes);
+        this.currentOffset += numberOfBytes;
+        return value;
+    }
     readUInt8() {
         const value = this.buffer.readUInt8(this.currentOffset);
         this.currentOffset++;
@@ -24,6 +29,11 @@ class GBXBuffer {
     readUInt16LE() {
         const value = this.buffer.readUInt16LE(this.currentOffset);
         this.currentOffset += 2;
+        return value;
+    }
+    readFloat() {
+        const value = this.buffer.readFloatLE(this.currentOffset);
+        this.currentOffset += 4;
         return value;
     }
     readString(length) {

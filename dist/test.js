@@ -8,7 +8,7 @@ const GBXBuffer_1 = require("./GBXBuffer");
 const HeaderParser_1 = require("./chunks/HeaderParser");
 const ReferenceTableParser_1 = require("./chunks/ReferenceTableParser");
 const BodyParser_1 = require("./BodyParser");
-const filePath = (_a = process.argv[2]) !== null && _a !== void 0 ? _a : path.resolve("resources/research/maps/AvecUnBlockChelou.Map.Gbx");
+const filePath = (_a = process.argv[2]) !== null && _a !== void 0 ? _a : path.resolve("resources/research/maps/One.Map.Gbx");
 const map = TMH.loadMap(filePath);
 const header = map.readHeader();
 console.log("Read :");
@@ -22,8 +22,6 @@ console.assert(referenceTable.compressedDataSize ===
     bufferFile.length - bufferFile.currentOffset);
 let data = bufferFile.decompress(referenceTable.compressedDataSize, referenceTable.dataSize);
 console.assert(referenceTable.dataSize === data.length);
-// while (data.currentOffset < data.length) {
 let bodyParser = new BodyParser_1.BodyParser(data);
 bodyParser.TMNode();
-// }
 //# sourceMappingURL=test.js.map

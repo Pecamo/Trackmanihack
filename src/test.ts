@@ -31,7 +31,5 @@ let data = bufferFile.decompress(
 );
 console.assert(referenceTable.dataSize === data.length);
 
-// while (data.currentOffset < data.length) {
 let bodyParser = new BodyParser(data);
 bodyParser.TMNode();
-// }

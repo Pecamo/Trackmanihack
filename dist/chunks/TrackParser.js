@@ -34,7 +34,8 @@ class TrackParser extends GBXParser_1.GBXParser {
         result.numBlocks = this.buffer.readUInt32LE();
         // for each block:
         result.blocks = [];
-        for (let i = 0; i < result.numBlocks; i++) {
+        // FIXME I don't know if it's supposed to be < or <=.
+        for (let i = 0; i <= result.numBlocks; i++) {
             const block = {};
             // lookbackstring blockName
             block.blockName = this.TMLookbackString();
@@ -56,16 +57,17 @@ class TrackParser extends GBXParser_1.GBXParser {
             if (block.flags === 0xFFFFFFFF) {
                 // continue (read the next block)
                 continue;
-                // if (flags & 0x8000) != 0: custom block
             }
-            else if ((block.flags & 0x8000) !== 0) {
+            // if (flags & 0x8000) != 0: custom block
+            if ((block.flags & 0x8000) !== 0) {
                 console.log("Custom Block!");
                 // lookbackstring author
                 block.blockAuthor = this.TMLookbackString();
                 // noderef skin
-                // if (flags & 0x100000)
             }
-            else if ((block.flags & 0x100000) === 0) {
+            // if (flags & 0x100000)
+            if ((block.flags & 0x100000) !== 0) {
+                console.log("truc bidule");
                 // noderef blockparameters
                 // ((new BodyParser(this.buffer)).TMNodeReference());
             }

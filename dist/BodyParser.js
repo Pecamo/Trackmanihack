@@ -9,6 +9,7 @@ class BodyParser extends GBXParser_1.GBXParser {
         super(buffer, stringList);
         this.buffer = buffer;
         this.stringList = stringList;
+        this.isEof = false;
         this.nodeList = [];
     }
     TMNodeReference() {
@@ -18,10 +19,14 @@ class BodyParser extends GBXParser_1.GBXParser {
             const classId = this.buffer.readUInt32LE();
             console.log("classId:", classId.toString(16));
             this.TMNode();
+            if (this.buffer.currentOffset === this.buffer.length) {
+                this.isEof = true;
+                console.log("EOF");
+            }
         }
     }
     TMNode() {
-        while (true) {
+        while (!this.isEof) {
             const chunkID = this.buffer.readUInt32LE();
             if (chunkID >= 0x0301a000 && chunkID <= 0x0313b000) {
                 console.log("Chunk ID:", chunkID.toString(16), this.buffer.currentOffset);
@@ -91,7 +96,6 @@ class BodyParser extends GBXParser_1.GBXParser {
                     console.log((0x0304301f).toString(16));
                     const trackParser = new TrackParser_1.TrackParser(this.buffer);
                     console.log(trackParser.TMTrack(chunkID));
-                    return;
                     break;
                 case 0x03043021:
                     this.TMNodeReference(); // clipIntro
@@ -99,17 +103,34 @@ class BodyParser extends GBXParser_1.GBXParser {
                     this.TMNodeReference(); // clipGroupEndRace
                     break;
                 case 0x03043022:
+                    this.buffer.readUInt32LE();
                     break;
                 case 0x03043024:
+                    const version = this.buffer.readByte();
+                    if (version >= 3) {
+                        const checksum = this.buffer.readBytes(32);
+                        console.log(checksum);
+                    }
+                    const filePath = this.TMString();
+                    if (filePath.length > 0 && version >= 1) {
+                        const locatorUrl = this.TMString();
+                    }
+                    console.log(version, filePath);
                     break;
                 case 0x03043025:
+                    const mapCoordOrigin = this.TMVec2();
+                    const mapCoordTarget = this.TMVec2();
+                    console.log(mapCoordOrigin, mapCoordTarget);
                     break;
                 case 0x03043026:
                     this.TMNodeReference(); // clipGlobal
                     break;
                 case 0x03043027:
+                    this.ArchiveGmCamVal();
                     break;
                 case 0x03043028:
+                    this.ArchiveGmCamVal();
+                    this.TMString();
                     break;
                 case 0x03043029: // skippable
                     break;
@@ -247,6 +268,7 @@ class BodyParser extends GBXParser_1.GBXParser {
                 case 0x0301c006:
                     break;
                 default:
+                    console.log(chunkID.toString(16));
                 // return;
                 // console.warn(`Unhandled Chuck: ${chunkID.toString(16)}`);
             }
@@ -269,6 +291,21 @@ class BodyParser extends GBXParser_1.GBXParser {
         const facadeOffset = this.buffer.seekFacade();
         console.log(facadeOffset);
         this.buffer.skip(facadeOffset);
+    }
+    ArchiveGmCamVal() {
+        const archiveGmCamVal = this.TMBool();
+        if (archiveGmCamVal) {
+            this.buffer.readByte();
+            const GmMat3 = [
+                this.TMVec3(),
+                this.TMVec3(),
+                this.TMVec3(),
+            ];
+            this.TMVec3();
+            this.buffer.readFloat();
+            this.buffer.readFloat();
+            this.buffer.readFloat();
+        }
     }
 }
 exports.BodyParser = BodyParser;

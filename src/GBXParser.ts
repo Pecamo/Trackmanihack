@@ -1,6 +1,23 @@
 import { GBXBuffer } from "./GBXBuffer";
 import { GlobalState } from "./GlobalState";
 
+export type Vec2 = {
+    x: number,
+    y: number,
+};
+
+export type Vec3 = {
+    x: number,
+    y: number,
+    z: number,
+};
+
+export type Color = {
+    r: number,
+    g: number,
+    b: number,
+};
+
 export class GBXParser {
     constructor(public buffer: GBXBuffer, public stringList: string[] = []) {}
 
@@ -11,6 +28,29 @@ export class GBXParser {
 
     public TMBool(): boolean {
         return this.buffer.readUInt32LE() === 1;
+    }
+
+    public TMVec2(): Vec2 {
+        return {
+            x: this.buffer.readFloat(),
+            y: this.buffer.readFloat(),
+        };
+    }
+
+    public TMVec3(): Vec3 {
+        return {
+            x: this.buffer.readFloat(),
+            y: this.buffer.readFloat(),
+            z: this.buffer.readFloat(),
+        };
+    }
+
+    public TMColor(): Color {
+        return {
+            r: this.buffer.readFloat(),
+            g: this.buffer.readFloat(),
+            b: this.buffer.readFloat(),
+        };
     }
 
     public TMLookbackString(): string {

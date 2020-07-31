@@ -14,6 +14,26 @@ class GBXParser {
     TMBool() {
         return this.buffer.readUInt32LE() === 1;
     }
+    TMVec2() {
+        return {
+            x: this.buffer.readFloat(),
+            y: this.buffer.readFloat(),
+        };
+    }
+    TMVec3() {
+        return {
+            x: this.buffer.readFloat(),
+            y: this.buffer.readFloat(),
+            z: this.buffer.readFloat(),
+        };
+    }
+    TMColor() {
+        return {
+            r: this.buffer.readFloat(),
+            g: this.buffer.readFloat(),
+            b: this.buffer.readFloat(),
+        };
+    }
     TMLookbackString() {
         const firstLookBack = GlobalState_1.GlobalState.getInstance().state.isFirstLookback;
         if (firstLookBack) {
