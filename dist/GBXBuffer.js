@@ -53,9 +53,6 @@ class GBXBuffer {
         // TODO Check for errors
         return gbxBuffer;
     }
-    get length() {
-        return this.buffer.length;
-    }
     seekFacade() {
         for (let i = 0; i < this.buffer.length - 4; i++) {
             if (this.buffer.slice(this.currentOffset).readUInt32LE(i) ===
@@ -66,6 +63,12 @@ class GBXBuffer {
     }
     skipToFacade() {
         this.skip(this.seekFacade());
+    }
+    get length() {
+        return this.buffer.length;
+    }
+    get nativeBuffer() {
+        return this.buffer;
     }
 }
 exports.GBXBuffer = GBXBuffer;

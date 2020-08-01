@@ -5,6 +5,7 @@ const GBXParser_1 = require("./GBXParser");
 const TrackParser_1 = require("./chunks/TrackParser");
 const GlobalState_1 = require("./GlobalState");
 const CommonParser_1 = require("./chunks/CommonParser");
+const DescriptionParser_1 = require("./chunks/DescriptionParser");
 class BodyParser extends GBXParser_1.GBXParser {
     constructor(buffer) {
         super(buffer);
@@ -52,6 +53,7 @@ class BodyParser extends GBXParser_1.GBXParser {
                 case 0x03043000:
                     break;
                 case 0x03043002: // TmDesc
+                    (new DescriptionParser_1.DescriptionParser(this.buffer)).TMDescription();
                     break;
                 case 0x03043003: // Common
                     (new CommonParser_1.CommonParser(this.buffer)).TMCommon();

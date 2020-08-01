@@ -3,6 +3,7 @@ import { GBXBuffer } from "./GBXBuffer";
 import { TrackParser } from "./chunks/TrackParser";
 import { GlobalState } from "./GlobalState";
 import { CommonParser } from "./chunks/CommonParser";
+import { DescriptionParser } from "./chunks/DescriptionParser";
 
 export class BodyParser extends GBXParser {
     private isEof = false;
@@ -59,6 +60,7 @@ export class BodyParser extends GBXParser {
                 case 0x03043000:
                     break;
                 case 0x03043002: // TmDesc
+                    (new DescriptionParser(this.buffer)).TMDescription();
                     break;
                 case 0x03043003: // Common
                     (new CommonParser(this.buffer)).TMCommon();

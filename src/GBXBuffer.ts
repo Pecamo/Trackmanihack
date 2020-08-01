@@ -73,10 +73,6 @@ export class GBXBuffer {
         return gbxBuffer;
     }
 
-    public get length(): number {
-        return this.buffer.length;
-    }
-
     public seekFacade(): number {
         for (let i = 0; i < this.buffer.length - 4; i++) {
             if (
@@ -90,5 +86,13 @@ export class GBXBuffer {
 
     public skipToFacade(): void {
         this.skip(this.seekFacade());
+    }
+
+    public get length(): number {
+        return this.buffer.length;
+    }
+
+    public get nativeBuffer(): Buffer {
+        return this.buffer;
     }
 }

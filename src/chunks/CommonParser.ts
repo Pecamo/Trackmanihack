@@ -10,11 +10,13 @@ export class CommonParser extends GBXParser {
     public TMCommon() {
         const metadata: any = {};
         metadata.version = GlobalState.getInstance().state.version = this.buffer.readByte();
+        console.log(metadata.version);
         [
             metadata.trackUID,
             metadata.environment,
             metadata.mapAuthor,
         ] = this.TMMeta(3);
+        console.log(metadata);
         metadata.trackName = this.TMString();
         metadata.kind = this.buffer.readByte();
 
