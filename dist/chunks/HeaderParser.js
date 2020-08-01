@@ -35,10 +35,12 @@ class HeaderParser extends GBXParser_1.GBXParser {
                         chunkSize: this.buffer.readUInt32LE() & 0x7fffffff,
                     });
                 }
+                console.log(headerChunks);
                 r.chunks = headerChunks.map((headerChunk) => {
                     const chunkIdBuffer = Buffer.alloc(4);
                     chunkIdBuffer.writeInt32LE(headerChunk.chunkId);
                     const chunkBuffer = this.buffer.nativeBuffer.slice(this.buffer.currentOffset, this.buffer.currentOffset + headerChunk.chunkSize);
+                    this.buffer.currentOffset += headerChunk.chunkSize;
                     const buffer = new GBXBuffer_1.GBXBuffer(Buffer.concat([chunkIdBuffer, chunkBuffer]));
                     const bodyParser = new BodyParser_1.BodyParser(buffer);
                     return bodyParser.TMNode();

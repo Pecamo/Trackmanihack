@@ -39,6 +39,8 @@ export class HeaderParser extends GBXParser {
                     });
                 }
 
+                console.log(headerChunks)
+
                 r.chunks = headerChunks.map((headerChunk) => {
                     const chunkIdBuffer: Buffer = Buffer.alloc(4);
                     chunkIdBuffer.writeInt32LE(headerChunk.chunkId);
@@ -48,9 +50,9 @@ export class HeaderParser extends GBXParser {
                         this.buffer.currentOffset + headerChunk.chunkSize
                     );
 
-                    const buffer = new GBXBuffer(
-                        Buffer.concat([chunkIdBuffer, chunkBuffer])
-                    );
+                    this.buffer.currentOffset += headerChunk.chunkSize;
+
+                    const buffer = new GBXBuffer(Buffer.concat([chunkIdBuffer, chunkBuffer]));
 
                     const bodyParser = new BodyParser(buffer);
                     return bodyParser.TMNode();

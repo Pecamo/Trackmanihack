@@ -4,6 +4,9 @@ import { TrackParser } from "./chunks/TrackParser";
 import { GlobalState } from "./GlobalState";
 import { CommonParser } from "./chunks/CommonParser";
 import { DescriptionParser } from "./chunks/DescriptionParser";
+import { XmlParser } from "./chunks/XmlParser";
+import { ThumbnailParser } from "./chunks/ThumbnailParser";
+import { AuthorParser } from "./chunks/AuthorParser";
 
 export class BodyParser extends GBXParser {
     private isEof = false;
@@ -34,7 +37,7 @@ export class BodyParser extends GBXParser {
             const chunkID = this.buffer.readUInt32LE();
 
             if (chunkID >= 0x0301a000 && chunkID <= 0x0313b000) {
-                console.log("Chunk ID:", chunkID.toString(16), this.buffer.currentOffset);
+                console.log("Chunk ID:", chunkID.toString(16), this.buffer.currentOffset - 4);
             }
 
             if (chunkID === 0xfacade01) {
@@ -61,18 +64,22 @@ export class BodyParser extends GBXParser {
                     break;
                 case 0x03043002: // TmDesc
                     (new DescriptionParser(this.buffer)).TMDescription();
-                    break;
+                    return;
                 case 0x03043003: // Common
                     (new CommonParser(this.buffer)).TMCommon();
-                    break;
+                    return;
                 case 0x03043004: // Version
-                    break;
+                    this.buffer.readUInt32LE();
+                    return;
                 case 0x03043005: // Community
-                    break;
+                    (new XmlParser(this.buffer)).TMXml();
+                    return;
                 case 0x03043007: // Thumbnail
-                    break;
+                    (new ThumbnailParser(this.buffer)).TMThumbnail();
+                    return;
                 case 0x03043008: // Author
-                    break;
+                    (new AuthorParser(this.buffer)).TMAuthor();
+                    return;
                 case 0x0304300d:
                     // console.log(this.TMMeta(3));
                     GlobalState.getInstance().state.isFirstLookback = false;

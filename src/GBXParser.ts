@@ -90,6 +90,7 @@ export class GBXParser {
                 // console.log("New String:", str);
                 return str;
             } else {
+                console.log(GlobalState.getInstance().state.stringStorage);
                 console.log(`Stored String at index ${index}:`, GlobalState.getInstance().state.stringStorage[index - 1]);
                 return GlobalState.getInstance().state.stringStorage[index - 1];
             }

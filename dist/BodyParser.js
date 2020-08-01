@@ -6,6 +6,9 @@ const TrackParser_1 = require("./chunks/TrackParser");
 const GlobalState_1 = require("./GlobalState");
 const CommonParser_1 = require("./chunks/CommonParser");
 const DescriptionParser_1 = require("./chunks/DescriptionParser");
+const XmlParser_1 = require("./chunks/XmlParser");
+const ThumbnailParser_1 = require("./chunks/ThumbnailParser");
+const AuthorParser_1 = require("./chunks/AuthorParser");
 class BodyParser extends GBXParser_1.GBXParser {
     constructor(buffer) {
         super(buffer);
@@ -30,7 +33,7 @@ class BodyParser extends GBXParser_1.GBXParser {
         while (!this.isEof) {
             const chunkID = this.buffer.readUInt32LE();
             if (chunkID >= 0x0301a000 && chunkID <= 0x0313b000) {
-                console.log("Chunk ID:", chunkID.toString(16), this.buffer.currentOffset);
+                console.log("Chunk ID:", chunkID.toString(16), this.buffer.currentOffset - 4);
             }
             if (chunkID === 0xfacade01) {
                 // TODO OnNodLoaded();
@@ -54,18 +57,22 @@ class BodyParser extends GBXParser_1.GBXParser {
                     break;
                 case 0x03043002: // TmDesc
                     (new DescriptionParser_1.DescriptionParser(this.buffer)).TMDescription();
-                    break;
+                    return;
                 case 0x03043003: // Common
                     (new CommonParser_1.CommonParser(this.buffer)).TMCommon();
-                    break;
+                    return;
                 case 0x03043004: // Version
-                    break;
+                    this.buffer.readUInt32LE();
+                    return;
                 case 0x03043005: // Community
-                    break;
+                    (new XmlParser_1.XmlParser(this.buffer)).TMXml();
+                    return;
                 case 0x03043007: // Thumbnail
-                    break;
+                    (new ThumbnailParser_1.ThumbnailParser(this.buffer)).TMThumbnail();
+                    return;
                 case 0x03043008: // Author
-                    break;
+                    (new AuthorParser_1.AuthorParser(this.buffer)).TMAuthor();
+                    return;
                 case 0x0304300d:
                     // console.log(this.TMMeta(3));
                     GlobalState_1.GlobalState.getInstance().state.isFirstLookback = false;
