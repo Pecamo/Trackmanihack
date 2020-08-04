@@ -87,7 +87,7 @@ export class GBXParser {
             // If this value is 0, a new string follows
             if (index === 0) {
                 const str = this.TMString();
-                // console.log("New String:", str);
+                GlobalState.getInstance().state.stringStorage.push(str);
                 return str;
             } else {
                 console.log(GlobalState.getInstance().state.stringStorage);
@@ -98,7 +98,7 @@ export class GBXParser {
             if (bit30 === 0 && bit31 === 1) {
                 return "Unassigned";
             } else if (bit30 === 1 && bit31 === 0) {
-                return "-1";
+                return "Unassigned";
             } else if (bit30 === 1 && bit31 === 1 && index === 0) {
                 const str = this.TMString();
                 GlobalState.getInstance().state.stringStorage.push(str);
