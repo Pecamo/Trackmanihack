@@ -13,14 +13,9 @@
     Note: Virtual Skipper 2 uses version 2 of the lookback strings. In this version, the string is always stored, the index always contains the position within the global name table, and the field with the version is also always present.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readLookBackStringBuffer = exports.nextLookbackStringParser = void 0;
-const binary_parser_1 = require("binary-parser");
+exports.readLookBackStringBuffer = void 0;
 const readString_1 = require("./readString");
 const stringList = [];
-exports.nextLookbackStringParser = new binary_parser_1.Parser()
-    .endianess("little")
-    .uint32("strLength")
-    .string("str", { length: "strLength" });
 function readLookBackStringBuffer(buffer, offset = 0, firstLookBack = true) {
     let str;
     if (firstLookBack) {

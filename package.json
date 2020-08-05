@@ -22,12 +22,10 @@
   },
   "homepage": "https://github.com/Pecamo/Trackmanihack#readme",
   "devDependencies": {
-    "@types/binary-parser": "^1.5.0",
     "@types/node": "^14.0.26",
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "binary-parser": "^1.6.2",
     "lzo": "^0.4.11"
   }
 }
