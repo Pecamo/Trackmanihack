@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TrackParser = void 0;
 const GBXParser_1 = require("../GBXParser");
 const BodyParser_1 = require("../BodyParser");
+const GlobalState_1 = require("../GlobalState");
 class TrackParser extends GBXParser_1.GBXParser {
     constructor(buffer) {
         super(buffer);
@@ -42,16 +43,15 @@ class TrackParser extends GBXParser_1.GBXParser {
             block.x = this.buffer.readByte();
             block.y = this.buffer.readByte();
             block.z = this.buffer.readByte();
-            // if version == 0:
-            //     uint16 flags
-            // if version > 0:
-            //     uint32 flags
-            block.flags = this.buffer.readUInt32LE();
-            // if (flags == 0xFFFFFFFF)
-            console.log(block.flags.toString(16));
+            if (GlobalState_1.GlobalState.getInstance().state.version === 0) {
+                block.flags = this.buffer.readUInt16LE();
+            }
+            else {
+                block.flags = this.buffer.readUInt32LE();
+            }
+            // console.log(block.flags.toString(16));
             if (block.flags === 0xFFFFFFFF) {
-                // continue (read the next block)
-                result.blocks.push(block);
+                // result.blocks.push(block);
                 continue;
             }
             // if (flags & 0x8000) != 0: custom block

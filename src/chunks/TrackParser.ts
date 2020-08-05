@@ -3,6 +3,7 @@
 import { GBXParser } from "../GBXParser";
 import { GBXBuffer } from "../GBXBuffer";
 import { BodyParser } from "../BodyParser";
+import { GlobalState } from "../GlobalState";
 
 export class TrackParser extends GBXParser {
     constructor(public buffer: GBXBuffer) {
@@ -45,18 +46,19 @@ export class TrackParser extends GBXParser {
             block.x = this.buffer.readByte();
             block.y = this.buffer.readByte();
             block.z = this.buffer.readByte();
-            // if version == 0:
-            //     uint16 flags
-            // if version > 0:
-            //     uint32 flags
-            block.flags = this.buffer.readUInt32LE();
-            // if (flags == 0xFFFFFFFF)
-            console.log(block.flags.toString(16));
+
+            if (GlobalState.getInstance().state.version === 0) {
+                block.flags = this.buffer.readUInt16LE();
+            } else {
+                block.flags = this.buffer.readUInt32LE();
+            }
+
+            // console.log(block.flags.toString(16));
             if (block.flags === 0xFFFFFFFF) {
-                // continue (read the next block)
-                result.blocks.push(block);
+                // result.blocks.push(block);
                 continue;
             }
+
             // if (flags & 0x8000) != 0: custom block
             if ((block.flags & 0x8000) !== 0) {
                 console.log("Custom Block!");
@@ -65,6 +67,7 @@ export class TrackParser extends GBXParser {
                 // noderef skin
                 ((new BodyParser(this.buffer)).TMNodeReference());
             }
+
             // if (flags & 0x100000)
             if ((block.flags & 0x100000) !== 0) {
                 console.log("Block parameters");

@@ -3,20 +3,20 @@ import { GlobalState } from "./GlobalState";
 import { collectionId } from "./constants/collectionId";
 
 export type Vec2 = {
-    x: number,
-    y: number,
+    x: number;
+    y: number;
 };
 
 export type Vec3 = {
-    x: number,
-    y: number,
-    z: number,
+    x: number;
+    y: number;
+    z: number;
 };
 
 export type Color = {
-    r: number,
-    g: number,
-    b: number,
+    r: number;
+    g: number;
+    b: number;
 };
 
 export class GBXParser {
@@ -122,5 +122,23 @@ export class GBXParser {
         }
 
         return acc;
+    }
+
+    public TMFileRef(): string {
+        const result: any = {};
+
+        result.ver = this.buffer.readByte();
+
+        if (result.ver >= 3) {
+            result.checksum = this.buffer.readBytes(32);
+        }
+
+        result.filePath = this.TMString();
+
+        if (result.filePath.length > 0 && result.ver >= 1) {
+            result.locatorUrl = this.TMString();
+        }
+
+        return result;
     }
 }

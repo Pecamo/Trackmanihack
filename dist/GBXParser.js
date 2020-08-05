@@ -94,6 +94,18 @@ class GBXParser {
         }
         return acc;
     }
+    TMFileRef() {
+        const result = {};
+        result.ver = this.buffer.readByte();
+        if (result.ver >= 3) {
+            result.checksum = this.buffer.readBytes(32);
+        }
+        result.filePath = this.TMString();
+        if (result.filePath.length > 0 && result.ver >= 1) {
+            result.locatorUrl = this.TMString();
+        }
+        return result;
+    }
 }
 exports.GBXParser = GBXParser;
 //# sourceMappingURL=GBXParser.js.map

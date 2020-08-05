@@ -7,6 +7,8 @@ import { DescriptionParser } from "./chunks/DescriptionParser";
 import { XmlParser } from "./chunks/XmlParser";
 import { ThumbnailParser } from "./chunks/ThumbnailParser";
 import { AuthorParser } from "./chunks/AuthorParser";
+import { spawn } from "child_process";
+import { writeFileSync } from "fs";
 
 export class BodyParser extends GBXParser {
     private isEof = false;
@@ -37,7 +39,11 @@ export class BodyParser extends GBXParser {
             const chunkID = this.buffer.readUInt32LE();
 
             if (chunkID >= 0x0301a000 && chunkID <= 0x0313b000) {
-                console.log("Chunk ID:", chunkID.toString(16), this.buffer.currentOffset - 4);
+                console.log(
+                    "Chunk ID:",
+                    chunkID.toString(16),
+                    this.buffer.currentOffset - 4
+                );
             }
 
             if (chunkID === 0xfacade01) {
@@ -48,11 +54,12 @@ export class BodyParser extends GBXParser {
             }
 
             // chunkFlags = GetChunkInfo(chunkID);
-            const isSkippable = this.buffer.readString(4) === 'PIKS';
+            const isSkippable = this.buffer.readString(4) === "PIKS";
             if (isSkippable) {
                 const skipSize = this.buffer.readUInt32LE();
                 console.log(`SKIP ${skipSize} bytes`);
                 this.buffer.skip(skipSize);
+                continue;
             } else {
                 // Rewind SKIP check
                 this.buffer.currentOffset -= 4;
@@ -63,22 +70,22 @@ export class BodyParser extends GBXParser {
                 case 0x03043000:
                     break;
                 case 0x03043002: // TmDesc
-                    (new DescriptionParser(this.buffer)).TMDescription();
+                    new DescriptionParser(this.buffer).TMDescription();
                     return;
                 case 0x03043003: // Common
-                    (new CommonParser(this.buffer)).TMCommon();
+                    new CommonParser(this.buffer).TMCommon();
                     return;
                 case 0x03043004: // Version
                     this.buffer.readUInt32LE();
                     return;
                 case 0x03043005: // Community
-                    (new XmlParser(this.buffer)).TMXml();
+                    new XmlParser(this.buffer).TMXml();
                     return;
                 case 0x03043007: // Thumbnail
-                    (new ThumbnailParser(this.buffer)).TMThumbnail();
+                    new ThumbnailParser(this.buffer).TMThumbnail();
                     return;
                 case 0x03043008: // Author
-                    (new AuthorParser(this.buffer)).TMAuthor();
+                    new AuthorParser(this.buffer).TMAuthor();
                     return;
                 case 0x0304300d:
                     // console.log(this.TMMeta(3));
@@ -124,20 +131,7 @@ export class BodyParser extends GBXParser {
                     this.buffer.readUInt32LE();
                     break;
                 case 0x03043024:
-                    const ver = this.buffer.readByte();
-
-                    if (ver >= 3) {
-                        const checksum = this.buffer.readBytes(32);
-                        console.log(checksum)
-                    }
-
-                    const filePath = this.TMString();
-
-                    if (filePath.length > 0 && ver >= 1) {
-                        const locatorUrl = this.TMString();
-                    }
-
-                    console.log(ver, filePath);
+                    const customMusicPackDesc = this.TMFileRef();
                     break;
                 case 0x03043025:
                     const mapCoordOrigin = this.TMVec2();
@@ -157,6 +151,61 @@ export class BodyParser extends GBXParser {
                 case 0x03043029: // skippable
                     break;
                 case 0x0304302a:
+                    this.TMBool();
+                    break;
+                // Not documented... seems skippable
+                case 0x03043034:
+                    break;
+                // Not documented... seems skippable
+                case 0x03043036:
+                    break;
+                // Not documented... seems skippable
+                case 0x03043038:
+                    break;
+                // Not documented... seems skippable
+                case 0x0304303e:
+                    break;
+                // Not documented... seems skippable
+                case 0x03043040:
+                    break;
+                // Not documented... seems skippable
+                case 0x03043042:
+                    break;
+                // Not documented... seems skippable
+                case 0x03043043:
+                    break;
+                // Not documented... seems skippable
+                case 0x03043044:
+                    break;
+                // Not documented... seems skippable (27760 bytes!)
+                // Seems to contain the map again, but a bit differently
+                case 0x03043048:
+                    // Attempt to decode:
+                    const r: any = {};
+                    console.log(this.buffer.readUInt32LE()); // seems to always be 0
+                    r.version = this.buffer.readUInt32LE();
+                    console.log("version:", r.version);
+                    const nbBlocks = this.buffer.readUInt32LE();
+                    console.log("nbBlocks:", r.nbBlocks);
+
+                    for (let i = 0; i < nbBlocks; i++) {
+                        r.flags = this.buffer.readUInt32LE();
+                        console.log("flags:", r.flags.toString(16));
+
+                        if ((r.flags & 0xF) === 0) {
+                            console.log(this.TMString());
+                        }
+                        r.rotation = this.buffer.readByte();
+                        r.x = this.buffer.readByte();
+                        r.y = this.buffer.readByte();
+                        r.z = this.buffer.readByte();
+                        r.unknown = this.buffer.readUInt32LE(); // seems to always be 0x1000
+                    }
+                    break;
+
+                // Not documented...
+                case 0x03043049:
+                    this.buffer.skip(36);
                     break;
                 case 0x0304303d: // skippable
                     break;
@@ -199,14 +248,46 @@ export class BodyParser extends GBXParser {
 
                 // CLASS CGameCtnBlockSkin
                 case 0x03059000:
+                    const text = this.TMString();
+                    const ignored = this.TMString();
                     break;
                 case 0x03059001:
+                    const text2 = this.TMString();
+                    const packDesc2 = this.TMFileRef();
                     break;
                 case 0x03059002:
+                    const text3 = this.TMString();
+                    const packDesc3 = this.TMFileRef();
+                    const parentPackDesc = this.TMFileRef();
+                    break;
+
+                // Not documented...
+                case 0x3059003:
+                    const text4 = this.TMString();
+                    const packDesc4 = this.TMFileRef();
                     break;
 
                 // CLASS CGameWaypointSpecialProperty
                 case 0x0313b000:
+                    break;
+                case 0x2e009000:
+                    const version = this.buffer.readUInt32LE();
+
+                    if (version === 1) {
+                        const spawn = this.buffer.readUInt32LE();
+                        const order = this.buffer.readUInt32LE();
+                    } else if (version === 2) {
+                        const tag = this.TMString();
+                        const order = this.buffer.readUInt32LE();
+
+                        console.log(tag, order);
+                    } else {
+                        throw new Error(`Unsupported version ${version}`);
+                    }
+                    break;
+
+                // Not documented... Can be empty.
+                case 0x2e009001:
                     break;
 
                 // CLASS CGameCtnReplayRecord
@@ -291,7 +372,6 @@ export class BodyParser extends GBXParser {
                 case 0x0301a00f:
                     break;
 
-
                 // CLASS CGameCtnObjectInfo
                 case 0x0301c000: // (header)
                     break;
@@ -302,7 +382,7 @@ export class BodyParser extends GBXParser {
 
                 default:
                     console.log(chunkID.toString(16));
-                    // return;
+                // return;
                 // console.warn(`Unhandled Chuck: ${chunkID.toString(16)}`);
             }
         }
@@ -332,11 +412,7 @@ export class BodyParser extends GBXParser {
         const archiveGmCamVal = this.TMBool();
         if (archiveGmCamVal) {
             this.buffer.readByte();
-            const GmMat3 = [
-                this.TMVec3(),
-                this.TMVec3(),
-                this.TMVec3(),
-            ]
+            const GmMat3 = [this.TMVec3(), this.TMVec3(), this.TMVec3()];
             this.TMVec3();
             this.buffer.readFloat();
             this.buffer.readFloat();
