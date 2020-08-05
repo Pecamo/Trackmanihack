@@ -1,5 +1,6 @@
 import { GBXBuffer } from "./GBXBuffer";
 import { GlobalState } from "./GlobalState";
+import { collectionId } from "./constants/collectionId";
 
 export type Vec2 = {
     x: number,
@@ -90,9 +91,13 @@ export class GBXParser {
                 GlobalState.getInstance().state.stringStorage.push(str);
                 return str;
             } else {
-                console.log(GlobalState.getInstance().state.stringStorage);
-                console.log(`Stored String at index ${index}:`, GlobalState.getInstance().state.stringStorage[index - 1]);
-                return GlobalState.getInstance().state.stringStorage[index - 1];
+                const result: string = GlobalState.getInstance().state.stringStorage[index - 1];
+
+                if (typeof result !== "undefined") {
+                    return result;
+                } else {
+                    return collectionId[index - 1];
+                }
             }
         } else {
             if (bit30 === 0 && bit31 === 1) {

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GBXParser = void 0;
 const GlobalState_1 = require("./GlobalState");
+const collectionId_1 = require("./constants/collectionId");
 class GBXParser {
     constructor(buffer) {
         this.buffer = buffer;
@@ -60,9 +61,13 @@ class GBXParser {
                 return str;
             }
             else {
-                console.log(GlobalState_1.GlobalState.getInstance().state.stringStorage);
-                console.log(`Stored String at index ${index}:`, GlobalState_1.GlobalState.getInstance().state.stringStorage[index - 1]);
-                return GlobalState_1.GlobalState.getInstance().state.stringStorage[index - 1];
+                const result = GlobalState_1.GlobalState.getInstance().state.stringStorage[index - 1];
+                if (typeof result !== "undefined") {
+                    return result;
+                }
+                else {
+                    return collectionId_1.collectionId[index - 1];
+                }
             }
         }
         else {
