@@ -2,8 +2,6 @@ import * as TMH from "./index";
 import * as path from "path";
 import * as fs from "fs";
 import { GBXBuffer } from "./GBXBuffer";
-import { GBXParser } from "./GBXParser";
-import { TrackParser } from "./chunks/TrackParser";
 import { HeaderParser } from "./chunks/HeaderParser";
 import { ReferenceTableParser } from "./chunks/ReferenceTableParser";
 import { BodyParser } from "./BodyParser";
