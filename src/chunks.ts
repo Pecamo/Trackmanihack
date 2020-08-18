@@ -46,7 +46,7 @@ export const chunks: {[key: number]: Chunk} = {
     name: "TmDesc",
     parse: (buffer) => {
       console.log(buffer.currentOffset, buffer.length);
-      new DescriptionParser(buffer).TMDescription();
+      return new DescriptionParser(buffer).TMDescription();
     },
   },
   0x03043003: {

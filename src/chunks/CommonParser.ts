@@ -65,5 +65,6 @@ export class CommonParser extends GBXParser {
         }
 
         console.log(metadata);
+        return metadata;
     }
 }

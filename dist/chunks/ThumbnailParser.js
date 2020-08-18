@@ -20,6 +20,7 @@ class ThumbnailParser extends GBXParser_1.GBXParser {
             "</Comments>"
             */
         }
+        return { version };
     }
 }
 exports.ThumbnailParser = ThumbnailParser;

@@ -19,5 +19,6 @@ export class ThumbnailParser extends GBXParser {
             "</Comments>"
             */
         }
+        return { version };
     }
 }

@@ -56,6 +56,7 @@ class DescriptionParser extends GBXParser_1.GBXParser {
                 }
             }
         }
+        return r;
     }
 }
 exports.DescriptionParser = DescriptionParser;

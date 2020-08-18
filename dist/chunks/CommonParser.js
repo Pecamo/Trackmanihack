@@ -53,6 +53,7 @@ class CommonParser extends GBXParser_1.GBXParser {
             }
         }
         console.log(metadata);
+        return metadata;
     }
 }
 exports.CommonParser = CommonParser;

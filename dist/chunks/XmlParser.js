@@ -10,6 +10,7 @@ class XmlParser extends GBXParser_1.GBXParser {
     TMXml() {
         const xml = this.TMString();
         console.log(xml);
+        return { xml };
     }
 }
 exports.XmlParser = XmlParser;

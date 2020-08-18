@@ -67,5 +67,6 @@ export class DescriptionParser extends GBXParser {
                 }
             }
         }
+        return r;
     }
 }

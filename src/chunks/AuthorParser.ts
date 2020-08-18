@@ -15,5 +15,6 @@ export class AuthorParser extends GBXParser {
         r.authorZone = this.TMString();
         r.authorExtraInfo = this.TMString();
         console.log(r);
+        return r;
     }
 }

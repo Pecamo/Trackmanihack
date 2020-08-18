@@ -38,7 +38,7 @@ exports.chunks = {
         name: "TmDesc",
         parse: (buffer) => {
             console.log(buffer.currentOffset, buffer.length);
-            new DescriptionParser_1.DescriptionParser(buffer).TMDescription();
+            return new DescriptionParser_1.DescriptionParser(buffer).TMDescription();
         },
     },
     0x03043003: {
