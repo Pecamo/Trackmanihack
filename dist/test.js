@@ -8,7 +8,7 @@ const GBXBuffer_1 = require("./GBXBuffer");
 const HeaderParser_1 = require("./chunks/HeaderParser");
 const ReferenceTableParser_1 = require("./chunks/ReferenceTableParser");
 const BodyParser_1 = require("./BodyParser");
-const filePath = (_a = process.argv[2]) !== null && _a !== void 0 ? _a : path.resolve("resources/research/maps/AvecUnBlockChelou.Map.Gbx");
+const filePath = (_a = process.argv[2]) !== null && _a !== void 0 ? _a : path.resolve("resources/research/maps/Line.Map.Gbx");
 const map = TMH.loadMap(filePath);
 const header = map.readHeader();
 console.log("Read :");

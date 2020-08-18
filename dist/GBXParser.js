@@ -82,6 +82,15 @@ class GBXParser {
                 GlobalState_1.GlobalState.getInstance().state.stringStorage.push(str);
                 return str;
             }
+            else if (bit30 === 1 && bit31 === 1 && index !== 0) {
+                const result = GlobalState_1.GlobalState.getInstance().state.stringStorage[index - 1];
+                if (typeof result !== "undefined") {
+                    return result;
+                }
+                else {
+                    return collectionId_1.collectionId[index - 1];
+                }
+            }
             else {
                 return "";
             }

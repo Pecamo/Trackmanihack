@@ -7,7 +7,7 @@ import { ReferenceTableParser } from "./chunks/ReferenceTableParser";
 import { BodyParser } from "./BodyParser";
 
 const filePath =
-    process.argv[2] ?? path.resolve("resources/research/maps/AvecUnBlockChelou.Map.Gbx");
+    process.argv[2] ?? path.resolve("resources/research/maps/Line.Map.Gbx");
 const map = TMH.loadMap(filePath);
 const header = map.readHeader();
 console.log("Read :");

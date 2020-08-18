@@ -3,6 +3,7 @@ export class GlobalState {
     private initState: any;
     private version: number;
     private stringStorage: string[] = [];
+    private isEof: boolean;
 
     private constructor() {
         // Clone state into InitState
@@ -15,6 +16,7 @@ export class GlobalState {
         isFirstLookback: true,
         version: undefined,
         stringStorage: [],
+        isEof: false,
     }
 
     public static getInstance(): GlobalState {

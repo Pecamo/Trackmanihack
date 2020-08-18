@@ -8,6 +8,7 @@ class GlobalState {
             isFirstLookback: true,
             version: undefined,
             stringStorage: [],
+            isEof: false,
         };
         // Clone state into InitState
         this.initState = Object.assign({}, this.state);

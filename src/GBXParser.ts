@@ -108,6 +108,14 @@ export class GBXParser {
                 const str = this.TMString();
                 GlobalState.getInstance().state.stringStorage.push(str);
                 return str;
+            } else if (bit30 === 1 && bit31 === 1 && index !== 0) {
+                const result: string = GlobalState.getInstance().state.stringStorage[index - 1];
+
+                if (typeof result !== "undefined") {
+                    return result;
+                } else {
+                    return collectionId[index - 1];
+                }
             } else {
                 return "";
             }

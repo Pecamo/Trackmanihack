@@ -1,6 +1,8 @@
 import { GBXParser } from "../GBXParser";
 import { GBXBuffer } from "../GBXBuffer";
 import { BodyParser } from "../BodyParser";
+import { GlobalState } from "../GlobalState";
+import { chunks } from "../chunks";
 
 export class HeaderParser extends GBXParser {
     constructor(public buffer: GBXBuffer, public stringList: string[] = []) {
@@ -42,6 +44,7 @@ export class HeaderParser extends GBXParser {
                 console.log(headerChunks)
 
                 r.chunks = headerChunks.map((headerChunk) => {
+                    GlobalState.getInstance().state.stringStorage = [];
                     const chunkIdBuffer: Buffer = Buffer.alloc(4);
                     chunkIdBuffer.writeInt32LE(headerChunk.chunkId);
 
@@ -52,10 +55,9 @@ export class HeaderParser extends GBXParser {
 
                     this.buffer.currentOffset += headerChunk.chunkSize;
 
-                    const buffer = new GBXBuffer(Buffer.concat([chunkIdBuffer, chunkBuffer]));
-
-                    const bodyParser = new BodyParser(buffer);
-                    return bodyParser.TMNode();
+                    const buffer = new GBXBuffer(chunkBuffer);
+                    const chunk = chunks[headerChunk.chunkId];
+                    chunk.parse(buffer);
                 });
 
                 // TODO: Body parser needed.

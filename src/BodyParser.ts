@@ -1,9 +1,9 @@
 import { GBXParser } from "./GBXParser";
 import { GBXBuffer } from "./GBXBuffer";
 import {chunks} from "./chunks";
+import { GlobalState } from "./GlobalState";
 
 export class BodyParser extends GBXParser {
-    private isEof = false;
     protected nodeList = [];
 
     constructor(public buffer: GBXBuffer) {
@@ -20,14 +20,14 @@ export class BodyParser extends GBXParser {
             this.TMNode();
 
             if (this.buffer.currentOffset === this.buffer.length) {
-                this.isEof = true;
+                GlobalState.getInstance().state.isEof = true;
                 console.log("EOF");
             }
         }
     }
 
     public TMNode() {
-        while (!this.isEof) {
+        while (!GlobalState.getInstance().state.isEof) {
             const chunkID = this.buffer.readUInt32LE();
 
             if (chunkID >= 0x0301a000 && chunkID <= 0x0313b000) {
@@ -59,7 +59,7 @@ export class BodyParser extends GBXParser {
 
             if (chunkID in chunks) {
                 const chunk = chunks[chunkID];
-                chunk.parse(this);
+                chunk.parse(this.buffer);
             } else {
                 console.log(chunkID.toString(16));
             }

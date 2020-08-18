@@ -36,7 +36,8 @@ class TrackParser extends GBXParser_1.GBXParser {
         // for each block:
         result.blocks = [];
         // FIXME I don't know if it's supposed to be < or <=.
-        for (let i = 0; i <= result.numBlocks; i++) {
+        let i = 0;
+        while (i < result.numBlocks) {
             const block = {};
             block.blockName = this.TMLookbackString();
             block.rotation = this.buffer.readByte();
@@ -51,7 +52,6 @@ class TrackParser extends GBXParser_1.GBXParser {
             }
             // console.log(block.flags.toString(16));
             if (block.flags === 0xFFFFFFFF) {
-                // result.blocks.push(block);
                 continue;
             }
             // if (flags & 0x8000) != 0: custom block
@@ -68,6 +68,7 @@ class TrackParser extends GBXParser_1.GBXParser {
                 // noderef blockparameters
                 ((new BodyParser_1.BodyParser(this.buffer)).TMNodeReference());
             }
+            i++;
             result.blocks.push(block);
         }
         return result;

@@ -3,7 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HeaderParser = void 0;
 const GBXParser_1 = require("../GBXParser");
 const GBXBuffer_1 = require("../GBXBuffer");
-const BodyParser_1 = require("../BodyParser");
+const GlobalState_1 = require("../GlobalState");
+const chunks_1 = require("../chunks");
 class HeaderParser extends GBXParser_1.GBXParser {
     constructor(buffer, stringList = []) {
         super(buffer);
@@ -37,13 +38,14 @@ class HeaderParser extends GBXParser_1.GBXParser {
                 }
                 console.log(headerChunks);
                 r.chunks = headerChunks.map((headerChunk) => {
+                    GlobalState_1.GlobalState.getInstance().state.stringStorage = [];
                     const chunkIdBuffer = Buffer.alloc(4);
                     chunkIdBuffer.writeInt32LE(headerChunk.chunkId);
                     const chunkBuffer = this.buffer.nativeBuffer.slice(this.buffer.currentOffset, this.buffer.currentOffset + headerChunk.chunkSize);
                     this.buffer.currentOffset += headerChunk.chunkSize;
-                    const buffer = new GBXBuffer_1.GBXBuffer(Buffer.concat([chunkIdBuffer, chunkBuffer]));
-                    const bodyParser = new BodyParser_1.BodyParser(buffer);
-                    return bodyParser.TMNode();
+                    const buffer = new GBXBuffer_1.GBXBuffer(chunkBuffer);
+                    const chunk = chunks_1.chunks[headerChunk.chunkId];
+                    chunk.parse(buffer);
                 });
                 // TODO: Body parser needed.
                 // r.idk = this.buffer.readArray({

@@ -5,10 +5,11 @@ import {ThumbnailParser} from "./chunks/ThumbnailParser";
 import {AuthorParser} from "./chunks/AuthorParser";
 import {TrackParser} from "./chunks/TrackParser";
 import {GlobalState} from "./GlobalState";
-import {BodyParser} from "./BodyParser";
+import { GBXBuffer } from "./GBXBuffer";
+import { BodyParser } from "./BodyParser";
 
 type Chunk = {
-  parse: (bp: BodyParser) => void,
+  parse: (buffer: GBXBuffer) => void,
   skippable?: boolean,
   name?: string,
   class?: string,
@@ -43,58 +44,60 @@ export const chunks: {[key: number]: Chunk} = {
   },
   0x03043002: {
     name: "TmDesc",
-    parse: (bp) => {
-      new DescriptionParser(bp.buffer).TMDescription();
+    parse: (buffer) => {
+      console.log(buffer.currentOffset, buffer.length);
+      new DescriptionParser(buffer).TMDescription();
     },
   },
   0x03043003: {
     name: "Common",
-    parse: (bp) => {
-      return new CommonParser(bp.buffer).TMCommon();
+    parse: (buffer) => {
+      return new CommonParser(buffer).TMCommon();
     },
   },
 
   0x03043004: {
     name: "Version",
-    parse: (bp) => {
-      return bp.buffer.readUInt32LE();
+    parse: (buffer) => {
+      return buffer.readUInt32LE();
     },
   },
   0x03043005: {
     name: "Community",
-    parse: (bp) => {
-      return new XmlParser(bp.buffer).TMXml();
+    parse: (buffer) => {
+      return new XmlParser(buffer).TMXml();
     },
   },
   0x03043007: {
     name: "Thumbnail",
-    parse: (bp) => {
-      return new ThumbnailParser(bp.buffer).TMThumbnail();
+    parse: (buffer) => {
+      return new ThumbnailParser(buffer).TMThumbnail();
     },
   },
   0x03043008: {
     name: "Author",
-    parse: (bp) => {
-      return new AuthorParser(bp.buffer).TMAuthor();
+    parse: (buffer) => {
+      return new AuthorParser(buffer).TMAuthor();
     },
   },
   0x0304300d: {
-    parse: (bp) => {
-      // console.log(bp.TMMeta(3));
+    parse: (buffer) => {
+      // console.log(buffer.TMMeta(3));
       GlobalState.getInstance().state.isFirstLookback = false;
       // TODO Implement
-      return bp.buffer.skip(4 * 4);
+      return buffer.skip(4 * 4);
     },
   },
 
   0x03043011: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       bp.TMNodeReference();
       bp.TMNodeReference();
       // 0: (internal)EndMarker, 1: (old)Campaign, 2: (old)Puzzle, 3: (old)Retro
       // 4: (old)TimeAttack, 5: (old)Rounds, 6: InProgress, 7: Campaign,
       // 8: Multi, 9: Solo, 10: Site, 11: SoloNadeo, 12: MultiNadeo
-      const kind = bp.buffer.readUInt32LE();
+      const kind = buffer.readUInt32LE();
       console.log("kind", kind);
     },
   },
@@ -125,49 +128,55 @@ export const chunks: {[key: number]: Chunk} = {
     skippable: true,
   },
   0x0304301f: {
-    parse: (bp) => {
+    parse: (buffer) => {
       console.log((0x0304301f).toString(16));
-      const trackParser = new TrackParser(bp.buffer);
+      const trackParser = new TrackParser(buffer);
       console.log(trackParser.TMTrack(0x0304301f));
     },
   },
   0x03043021: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       bp.TMNodeReference(); // clipIntro
       bp.TMNodeReference(); // clipGroupInGame
       bp.TMNodeReference(); // clipGroupEndRace
     },
   },
   0x03043022: {
-    parse: (bp) => {
-      bp.buffer.readUInt32LE();
+    parse: (buffer) => {
+      buffer.readUInt32LE();
     },
   },
   0x03043024: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       const customMusicPackDesc = bp.TMFileRef();
     },
   },
   0x03043025: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       const mapCoordOrigin = bp.TMVec2();
       const mapCoordTarget = bp.TMVec2();
       console.log(mapCoordOrigin, mapCoordTarget);
     },
   },
   0x03043026: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       bp.TMNodeReference(); // clipGlobal
 
     },
   },
   0x03043027: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       bp.ArchiveGmCamVal();
     },
   },
   0x03043028: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       bp.ArchiveGmCamVal();
       bp.TMString();
     },
@@ -177,7 +186,8 @@ export const chunks: {[key: number]: Chunk} = {
     skippable: true,
   },
   0x0304302a: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       bp.TMBool();
     },
   },
@@ -212,27 +222,30 @@ export const chunks: {[key: number]: Chunk} = {
   // Not documented... seems skippable (27760 bytes!)
   // Seems to contain the map again, but a bit differently
   0x03043048: {
-    parse: (bp) => {
+    parse: (buffer) => {
       // Attempt to decode:
       const r: any = {};
-      console.log(bp.buffer.readUInt32LE()); // seems to always be 0
-      r.version = bp.buffer.readUInt32LE();
+      console.log(buffer.readUInt32LE()); // seems to always be 0
+      r.version = buffer.readUInt32LE();
       console.log("version:", r.version);
-      const nbBlocks = bp.buffer.readUInt32LE();
+      const nbBlocks = buffer.readUInt32LE();
       console.log("nbBlocks:", r.nbBlocks);
 
       for (let i = 0; i < nbBlocks; i++) {
-        r.flags = bp.buffer.readUInt32LE();
+        r.flags = buffer.readUInt32LE();
         console.log("flags:", r.flags.toString(16));
 
         if ((r.flags & 0xF) === 0) {
-          console.log(bp.TMString());
+          const bp = new BodyParser(buffer);
+          r.name = bp.TMString();
+          console.log(r.name);
         }
-        r.rotation = bp.buffer.readByte();
-        r.x = bp.buffer.readByte();
-        r.y = bp.buffer.readByte();
-        r.z = bp.buffer.readByte();
-        r.unknown = bp.buffer.readUInt32LE(); // seems to always be 0x1000
+
+        r.rotation = buffer.readByte();
+        r.x = buffer.readByte();
+        r.y = buffer.readByte();
+        r.z = buffer.readByte();
+        r.unknown = buffer.readUInt32LE(); // seems to always be 0x1000
       }
     },
   },
@@ -240,8 +253,8 @@ export const chunks: {[key: number]: Chunk} = {
 
   // Not documented...
   0x03043049: {
-    parse: (bp) => {
-      bp.buffer.skip(36);
+    parse: (buffer) => {
+      buffer.skip(36);
     },
   },
   0x0304303d: {
@@ -259,7 +272,8 @@ export const chunks: {[key: number]: Chunk} = {
 
   // CLASS CGameCtnCollectorList
   0x0301b000: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       bp.CGameCtnCollectorList();
     },
   },
@@ -269,7 +283,8 @@ export const chunks: {[key: number]: Chunk} = {
     parse: () => {},
   }, // All fields are ignored
   0x0305b001: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       bp.CGameCtnChallengeParameters();
     },
   },
@@ -307,19 +322,22 @@ export const chunks: {[key: number]: Chunk} = {
 
   // CLASS CGameCtnBlockSkin
   0x03059000: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       const text = bp.TMString();
       const ignored = bp.TMString();
     },
   },
   0x03059001: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       const text2 = bp.TMString();
       const packDesc2 = bp.TMFileRef();
     },
   },
   0x03059002: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       const text3 = bp.TMString();
       const packDesc3 = bp.TMFileRef();
       const parentPackDesc = bp.TMFileRef();
@@ -328,7 +346,8 @@ export const chunks: {[key: number]: Chunk} = {
 
   // Not documented...
   0x3059003: {
-    parse: (bp) => {
+    parse: (buffer) => {
+      const bp = new BodyParser(buffer);
       const text4 = bp.TMString();
       const packDesc4 = bp.TMFileRef();
     },
@@ -339,15 +358,16 @@ export const chunks: {[key: number]: Chunk} = {
     parse: () => {},
   },
   0x2e009000: {
-    parse: (bp) => {
-      const version = bp.buffer.readUInt32LE();
+    parse: (buffer) => {
+      const version = buffer.readUInt32LE();
 
       if (version === 1) {
-        const spawn = bp.buffer.readUInt32LE();
-        const order = bp.buffer.readUInt32LE();
+        const spawn = buffer.readUInt32LE();
+        const order = buffer.readUInt32LE();
       } else if (version === 2) {
+        const bp = new BodyParser(buffer);
         const tag = bp.TMString();
-        const order = bp.buffer.readUInt32LE();
+        const order = buffer.readUInt32LE();
 
         console.log(tag, order);
       } else {
