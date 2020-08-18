@@ -1,12 +1,5 @@
 import { GBXParser } from "./GBXParser";
 import { GBXBuffer } from "./GBXBuffer";
-import { TrackParser } from "./chunks/TrackParser";
-import { GlobalState } from "./GlobalState";
-import { CommonParser } from "./chunks/CommonParser";
-import { DescriptionParser } from "./chunks/DescriptionParser";
-import { XmlParser } from "./chunks/XmlParser";
-import { ThumbnailParser } from "./chunks/ThumbnailParser";
-import { AuthorParser } from "./chunks/AuthorParser";
 import {chunks} from "./chunks";
 
 export class BodyParser extends GBXParser {
