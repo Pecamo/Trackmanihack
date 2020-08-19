@@ -38,7 +38,6 @@ export class TrackParser extends GBXParser {
 
         // for each block:
         result.blocks = [];
-        // FIXME I don't know if it's supposed to be < or <=.
         let i = 0;
         while (i < result.numBlocks) {
             const block: any = {};
@@ -63,7 +62,30 @@ export class TrackParser extends GBXParser {
             if ((block.flags & 0x8000) !== 0) {
                 console.log("Custom Block!");
                 // lookbackstring author
-                block.blockAuthor = this.TMLookbackString();
+                block.customBlock = {};
+                block.customBlock.blockAuthor = this.TMLookbackString();
+                
+                // Attempt to reverse engineer
+                // block.customBlock.customIdk = this.buffer.readUInt32LE().toString(16);
+                // block.customBlock.idk = this.TMLookbackString();
+                // block.customBlock.idk2 = this.buffer.readUInt32LE();
+                // block.customBlock.flags = this.buffer.readUInt32LE();
+                // block.customBlock._a = this.TMLookbackString();
+                // block.customBlock.rotation = this.buffer.readByte();
+                // block.customBlock.x = this.buffer.readByte();
+                // block.customBlock.y = this.buffer.readByte();
+                // block.customBlock.z = this.buffer.readByte();
+                // block.customBlock.flags2 = this.buffer.readUInt32LE().toString(16);
+                // block.customBlock._c = this.TMLookbackString();
+                // block.customBlock.rotation2 = this.buffer.readByte(),
+                // block.customBlock.x2 = this.buffer.readByte(),
+                // block.customBlock.y2 = this.buffer.readByte(),
+                // block.customBlock.z2 = this.buffer.readByte(),
+                // block.customBlock._e = this.TMLookbackString();
+                // block.customBlock.trackUID = this.TMLookbackString();
+                // block.customBlock.flags2 = this.buffer.readUInt32LE();
+
+                console.log(block);
                 // noderef skin
                 ((new BodyParser(this.buffer)).TMNodeReference());
             }
@@ -74,6 +96,10 @@ export class TrackParser extends GBXParser {
                 // noderef blockparameters
                 ((new BodyParser(this.buffer)).TMNodeReference());
             }
+
+            block.unassignedStr = this.TMLookbackString();
+            block.idk = this.buffer.readUInt32LE();
+            block.idk2 = this.buffer.readUInt32LE();
 
             i++;
             result.blocks.push(block);

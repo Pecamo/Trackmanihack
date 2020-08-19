@@ -51,7 +51,7 @@ class BodyParser extends GBXParser_1.GBXParser {
                 chunk.parse(this.buffer);
             }
             else {
-                console.log(chunkID.toString(16));
+                console.error(`Unknown chunk ID: ${chunkID.toString(16)}, at ${this.buffer.currentOffset - 4}`);
             }
         }
     }
